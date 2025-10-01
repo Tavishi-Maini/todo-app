@@ -1,35 +1,53 @@
-import React, { useState } from "react";
-import { TextField, Button, Card, CardContent, Typography } from "@mui/material";
+import React, { useState, useContext } from "react";
 import axios from "axios";
+import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
-  const [form, setForm] = React.useState({ username: "", password: "" });
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const { setUser, loadUser } = React.useContext(AuthContext);
+  const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://127.0.0.1:8000/api/auth/login/", form);
+      const res = await axios.post("http://127.0.0.1:8000/api/auth/login/", {
+        username,
+        password,
+      });
+
+      // store access token in localStorage
       localStorage.setItem("token", res.data.access);
-      alert("Login successful!");
+
+      // load user info into context
+      await loadUser();
+
+      // redirect to dashboard
+      navigate("/");
     } catch (err) {
-      alert("Login failed!");
+      console.error(err);
+      alert("Login failed");
     }
   };
 
   return (
-    <Card sx={{ maxWidth: 400, margin: "auto", mt: 10 }}>
-      <CardContent>
-        <Typography variant="h5">Login</Typography>
-        <form onSubmit={handleSubmit}>
-          <TextField label="Username" name="username" fullWidth margin="normal" onChange={handleChange} />
-          <TextField label="Password" name="password" type="password" fullWidth margin="normal" onChange={handleChange} />
-          <Button type="submit" variant="contained" fullWidth>Login</Button>
-        </form>
-      </CardContent>
-    </Card>
+    <form onSubmit={handleLogin}>
+      <input
+        type="text"
+        placeholder="Username"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        required
+      />
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
+      <button type="submit">Login</button>
+    </form>
   );
 }
