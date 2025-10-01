@@ -1,0 +1,10 @@
+# Logs
+*.log
+
+# Python & Node envs
+venv/
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
