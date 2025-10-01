@@ -17,6 +17,7 @@ function App() {
       />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="*" element={<div style={{textAlign: 'center', marginTop: '2rem'}}><h2>Page Not Found</h2></div>} />
     </Routes>
   );
 }
