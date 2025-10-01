@@ -3,7 +3,7 @@ import { TextField, Button, Card, CardContent, Typography } from "@mui/material"
 import axios from "axios";
 
 export default function Register() {
-  const [form, setForm] = useState({ username: "", email: "", password: "" });
+  const [form, setForm] = React.useState({ username: "", email: "", password: "" });
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });

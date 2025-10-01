@@ -3,7 +3,7 @@ import { AuthContext } from "../context/AuthContext";
 import { Button, Typography, Box } from "@mui/material";
 
 export default function Dashboard() {
-  const { user, setUser } = useContext(AuthContext);
+  const { user, setUser } = React.useContext(AuthContext);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
