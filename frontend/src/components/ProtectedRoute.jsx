@@ -4,10 +4,8 @@ import { AuthContext } from "../context/AuthContext";
 
 export default function ProtectedRoute({ children }) {
   const { user } = useContext(AuthContext);
-
-  // Redirect to login if user is not logged in
-  if (!user) return <Navigate to="/login" replace />;
-
-  // Else render children (Dashboard)
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
   return children;
 }

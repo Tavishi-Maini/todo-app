@@ -15,7 +15,11 @@ export default function Register() {
       await axios.post("http://127.0.0.1:8000/api/auth/register/", form);
       alert("Registration successful! Please login.");
     } catch (err) {
-      alert("Registration failed!");
+      if (err.response && err.response.data) {
+        alert("Registration failed: " + JSON.stringify(err.response.data));
+      } else {
+        alert("Registration failed!");
+      }
     }
   };
 

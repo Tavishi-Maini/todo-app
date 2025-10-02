@@ -26,8 +26,11 @@ export default function Login() {
       // redirect to dashboard
       navigate("/");
     } catch (err) {
-      console.error(err);
-      alert("Login failed");
+      if (err.response && err.response.data) {
+        alert("Login failed: " + JSON.stringify(err.response.data));
+      } else {
+        alert("Login failed");
+      }
     }
   };
 

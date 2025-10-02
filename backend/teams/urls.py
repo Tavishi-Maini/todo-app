@@ -1,8 +1,7 @@
 from django.urls import path
-from .views import TeamCreateView, TeamJoinView, TaskAssignView
+from .views import TeamListCreate, JoinTeam
 
 urlpatterns = [
-    path('create/', TeamCreateView.as_view(), name='team-create'),
-    path('<int:pk>/join/', TeamJoinView.as_view(), name='team-join'),
-    path('<int:pk>/assign/', TaskAssignView.as_view(), name='task-assign'),
+    path('', TeamListCreate.as_view()),
+    path('<int:pk>/join/', JoinTeam.as_view()),
 ]

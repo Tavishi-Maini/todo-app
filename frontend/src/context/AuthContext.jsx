@@ -1,38 +1,30 @@
 import React, { createContext, useState, useEffect } from "react";
-import axios from "axios";
+import API from "../lib/api";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  const loadUser = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const res = await axios.get("http://127.0.0.1:8000/api/auth/me/", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setUser(res.data);
-    } catch (err) {
-      setUser(null);
-      localStorage.removeItem("token");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Check if user is logged in on load
   useEffect(() => {
-    loadUser();
+    const fetchUser = async () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const res = await API.get("auth/user/");
+          setUser(res.data);
+        } catch (err) {
+          console.error(err);
+          localStorage.removeItem("token");
+        }
+      }
+    };
+    fetchUser();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, setUser, loadUser, loading }}>
+    <AuthContext.Provider value={{ user, setUser }}>
       {children}
     </AuthContext.Provider>
   );
