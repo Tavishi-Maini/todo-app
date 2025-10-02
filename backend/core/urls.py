@@ -7,4 +7,5 @@ urlpatterns = [
     path("api/auth/", include('accounts.urls')),
     path('', RedirectView.as_view(url='/api/auth/')),  # redirect to auth
     path('api/tasks/', include('tasks.urls')),
+    path('api/teams/', include('teams.urls')),
 ]

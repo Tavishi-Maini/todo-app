@@ -7,6 +7,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 function App() {
   return (
     <Routes>
+      {/* Protected Dashboard */}
       <Route
         path="/"
         element={
@@ -15,9 +16,18 @@ function App() {
           </ProtectedRoute>
         }
       />
+      {/* Auth Routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="*" element={<div style={{textAlign: 'center', marginTop: '2rem'}}><h2>Page Not Found</h2></div>} />
+      {/* Catch-all 404 */}
+      <Route
+        path="*"
+        element={
+          <div style={{ textAlign: "center", marginTop: "2rem" }}>
+            <h2>Page Not Found</h2>
+          </div>
+        }
+      />
     </Routes>
   );
 }

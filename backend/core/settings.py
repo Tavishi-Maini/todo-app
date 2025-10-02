@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "accounts",
     "corsheaders",
-    "tasks"
+    "tasks",
+    "teams",
 ]
 
 MIDDLEWARE = [
