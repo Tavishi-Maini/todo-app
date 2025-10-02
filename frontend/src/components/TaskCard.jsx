@@ -1,32 +1,61 @@
-import React from "react";
-import { Card, CardContent, Typography, Box, Chip } from "@mui/material";
+import React, { useState } from "react";
+import {
+  Card,
+  CardContent,
+  Typography,
+  Select,
+  MenuItem,
+  Button,
+  Box,
+} from "@mui/material";
 
-export default function TaskCard({ task }) {
-  const statusColors = {
-    TODO: "default",
-    IN_PROGRESS: "primary",
-    DONE: "success",
-  };
+export default function TaskCard({ task, onUpdate, users }) {
+  const [status, setStatus] = useState(task.status);
+  const [assignedTo, setAssignedTo] = useState(task.assigned_to || "");
 
-  const priorityColors = {
-    LOW: "success",
-    MEDIUM: "warning",
-    HIGH: "error",
+  const handleSave = () => {
+    onUpdate(task.id, { status, assigned_to: assignedTo || null });
   };
 
   return (
-    <Card sx={{ mt: 2, borderRadius: 2, boxShadow: 3, transition: "transform 0.2s", "&:hover": { transform: "scale(1.02)" } }}>
-  <CardContent>
-    <Typography variant="h6" sx={{ fontWeight: 500 }}>{task.title}</Typography>
-    <Typography sx={{ mt: 1, color: "text.secondary" }}>{task.description}</Typography>
-    <Box sx={{ mt: 1, display: "flex", gap: 1, flexWrap: "wrap" }}>
-      <Chip label={`Priority: ${task.priority}`} color={priorityColors[task.priority]} size="small" />
-      <Chip label={`Status: ${task.status}`} color={statusColors[task.status]} size="small" />
-      {task.assigned_to && <Chip label={`Assigned: ${task.assigned_to.username}`} size="small" />}
-      {task.due_date && <Chip label={`Due: ${task.due_date}`} size="small" />}
-    </Box>
-  </CardContent>
-</Card>
+    <Card sx={{ mt: 2, p: 2 }}>
+      <CardContent>
+        <Typography variant="h6">{task.title}</Typography>
+        <Typography>{task.description}</Typography>
+        <Typography sx={{ mt: 1 }}>
+          Priority: <b>{task.priority}</b> | Due:{" "}
+          {task.due_date ? task.due_date : "No date"}
+        </Typography>
 
+        <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
+          {/* Status Dropdown */}
+          <Select value={status} onChange={(e) => setStatus(e.target.value)} size="small">
+            <MenuItem value="TODO">To Do</MenuItem>
+            <MenuItem value="IN_PROGRESS">In Progress</MenuItem>
+            <MenuItem value="DONE">Done</MenuItem>
+          </Select>
+
+          {/* Assigned User Dropdown */}
+          <Select
+            value={assignedTo}
+            onChange={(e) => setAssignedTo(e.target.value)}
+            size="small"
+            displayEmpty
+          >
+            <MenuItem value="">Unassigned</MenuItem>
+            {users.map((u) => (
+              <MenuItem key={u.id} value={u.id}>
+                {u.username}
+              </MenuItem>
+            ))}
+          </Select>
+
+          <Button variant="contained" size="small" onClick={handleSave}>
+            Save
+          </Button>
+        </Box>
+      </CardContent>
+    </Card>
   );
 }
+

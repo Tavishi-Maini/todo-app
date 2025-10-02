@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -6,8 +6,15 @@ import { useNavigate } from "react-router-dom";
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { setUser, loadUser } = React.useContext(AuthContext);
+  const { user, setUser, loadUser } = useContext(AuthContext);
   const navigate = useNavigate();
+
+  // Redirect to dashboard if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -19,13 +26,13 @@ export default function Login() {
 
       // store access token in localStorage
       localStorage.setItem("token", res.data.access);
+      console.log("Saved token:", res.data.access);
 
       // load user info into context
       await loadUser();
-
-      // redirect to dashboard
-      navigate("/");
+      console.log("After loadUser, user:", user);
     } catch (err) {
+      console.error("Full error:", err);
       if (err.response && err.response.data) {
         alert("Login failed: " + JSON.stringify(err.response.data));
       } else {

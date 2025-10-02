@@ -1,22 +1,17 @@
-from rest_framework import generics, permissions
-from .models import Team, TeamMember
-from .serializers import TeamSerializer
+from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework import viewsets
+from .models import Team
+from .serializers import TeamSerializer
+from tasks.serializers import TaskSerializer
 
-class TeamListCreate(generics.ListCreateAPIView):
+class TeamViewSet(viewsets.ModelViewSet):
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
-    def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
-
-class JoinTeam(generics.UpdateAPIView):
-    queryset = Team.objects.all()
-    serializer_class = TeamSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def update(self, request, *args, **kwargs):
+    @action(detail=True, methods=["get"], url_path="tasks")
+    def team_tasks(self, request, pk=None):
         team = self.get_object()
-        TeamMember.objects.get_or_create(team=team, user=request.user)
-        return Response({"status": "joined team"})
+        tasks = team.tasks.all()
+        serializer = TaskSerializer(tasks, many=True)
+        return Response(serializer.data)
