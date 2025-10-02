@@ -1,17 +1,12 @@
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
 from .models import Team
 from .serializers import TeamSerializer
-from tasks.serializers import TaskSerializer
 
 class TeamViewSet(viewsets.ModelViewSet):
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-    @action(detail=True, methods=["get"], url_path="tasks")
-    def team_tasks(self, request, pk=None):
-        team = self.get_object()
-        tasks = team.tasks.all()
-        serializer = TaskSerializer(tasks, many=True)
-        return Response(serializer.data)
+    # Optional: override create to add the creator as manager
+    def perform_create(self, serializer):
+        serializer.save(manager=self.request.user)

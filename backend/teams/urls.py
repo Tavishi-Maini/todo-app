@@ -1,6 +1,7 @@
-from django.urls import path
-from .views import UserListView
+from rest_framework.routers import DefaultRouter
+from .views import TeamViewSet
 
-urlpatterns = [
-    path("users/", UserListView.as_view(), name="user-list"),
-]
+router = DefaultRouter()
+router.register(r'users', TeamViewSet, basename='team')
+
+urlpatterns = router.urls

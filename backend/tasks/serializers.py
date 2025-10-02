@@ -10,6 +10,10 @@ class TaskSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class TaskAssignSerializer(serializers.ModelSerializer):
+    assigned_to = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), 
+        allow_null=True
+    )
     class Meta:
         model = Task
         fields = ["assigned_to", "status"]
