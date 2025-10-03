@@ -1,3 +1,4 @@
+// server.js
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -9,11 +10,22 @@ app.use(cors());
 app.use(bodyParser.json());
 
 const users = []; // temporary in-memory DB
-const SECRET = "your_jwt_secret"; // in production → use env variable
+const SECRET = "your_jwt_secret";
 
 // Register route
 app.post("/register", async (req, res) => {
+  console.log("Incoming registration data:", req.body);
+
   const { username, email, password } = req.body;
+
+  if (!username || !email || !password) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+
+  const existing = users.find((u) => u.email === email);
+  if (existing) {
+    return res.status(400).json({ error: "User already exists" });
+  }
 
   const hashedPassword = await bcrypt.hash(password, 10);
   users.push({ username, email, password: hashedPassword });
@@ -34,22 +46,3 @@ app.post("/login", async (req, res) => {
   const token = jwt.sign({ email: user.email }, SECRET, { expiresIn: "1h" });
   res.json({ token, username: user.username });
 });
-
-// Protected route
-app.get("/dashboard-data", (req, res) => {
-  const authHeader = req.headers["authorization"];
-  if (!authHeader) return res.status(401).json({ error: "No token provided" });
-
-  const token = authHeader.split(" ")[1];
-  jwt.verify(token, SECRET, (err, user) => {
-    if (err) return res.status(403).json({ error: "Invalid token" });
-
-    res.json({
-      message: "Welcome to your dashboard!",
-      user: user.email,
-      data: ["Item 1", "Item 2", "Item 3"],
-    });
-  });
-});
-
-app.listen(5000, () => console.log("Backend running on http://localhost:5000"));

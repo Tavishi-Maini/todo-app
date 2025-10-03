@@ -4,7 +4,7 @@ import { Box, TextField, Button, Typography, Card } from "@mui/material";
 import API from "../lib/api";
 
 export default function Register() {
-  const [form, setForm] = useState({ username: "", password: "" });
+  const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -14,8 +14,10 @@ export default function Register() {
 
   const handleRegister = async () => {
     try {
-      await API.post("/register", form);
-      navigate("/login"); // redirect to login after successful signup
+      const res = await API.post("/api/auth/register/", form); // match Django URL
+      localStorage.setItem("token", res.data.token);            // store JWT
+      localStorage.setItem("username", res.data.username);
+      navigate("/");                                           // redirect to dashboard
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed");
     }
@@ -24,14 +26,12 @@ export default function Register() {
   return (
     <Box sx={{ mt: 8, display: "flex", justifyContent: "center" }}>
       <Card sx={{ p: 4, width: 400, textAlign: "center" }}>
-        <Typography variant="h5" gutterBottom>
-          Create Account
-        </Typography>
+        <Typography variant="h5" gutterBottom>Create Account</Typography>
         <TextField
           fullWidth
-          name="username"
-          label="Username"
-          value={form.username}
+          name="email"
+          label="E-mail"
+          value={form.email}
           onChange={handleChange}
           sx={{ mt: 2 }}
         />
@@ -44,23 +44,11 @@ export default function Register() {
           onChange={handleChange}
           sx={{ mt: 2 }}
         />
-        {error && (
-          <Typography color="error" sx={{ mt: 1 }}>
-            {error}
-          </Typography>
-        )}
-        <Button
-          variant="contained"
-          fullWidth
-          sx={{ mt: 3 }}
-          onClick={handleRegister}
-        >
+        {error && <Typography color="error" sx={{ mt: 1 }}>{error}</Typography>}
+        <Button variant="contained" fullWidth sx={{ mt: 3 }} onClick={handleRegister}>
           Sign Up
         </Button>
-        <Button
-          onClick={() => navigate("/login")}
-          sx={{ mt: 1 }}
-        >
+        <Button onClick={() => navigate("/login")} sx={{ mt: 1 }}>
           Already have an account? Login
         </Button>
       </Card>
